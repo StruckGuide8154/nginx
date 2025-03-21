@@ -9,7 +9,7 @@ This example is deploys a site using [NGINX](https://www.nginx.com/)
 
 - NGINX
 - Static Site
-
+s
 ## 💁‍♀️ How to use
 
 - Open the `site/index.html` in the browser
