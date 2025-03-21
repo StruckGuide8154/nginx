@@ -1,37 +1,2141 @@
 <!DOCTYPE html>
-
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>NGINX on Railway</title>
-    <meta name="description" content="Choo Choo!" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N3RA | Neural Network Agent</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Core Variables */
+        :root {
+            --primary: #ff2a6d;
+            --primary-glow: #ff2a6d;
+            --secondary: #d70cb8;
+            --tertiary: #05d9e8;
+            --dark: #0d0221;
+            --darker: #000000;
+            --text: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.7);
+            --neon-pink: #ff2a6d;
+            --neon-purple: #d70cb8;
+            --neon-blue: #05d9e8;
+            --neon-glow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink), 0 0 30px var(--neon-pink);
+            --neon-glow-purple: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-purple), 0 0 30px var(--neon-purple);
+            --neon-glow-blue: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 30px var(--neon-blue);
+            --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+            --font-display: 'Orbitron', sans-serif;
+            --gradient-hot: linear-gradient(to right, var(--neon-pink), var(--neon-purple));
+            --gradient-hot-alt: linear-gradient(to right, var(--neon-purple), var(--neon-pink));
+            --gradient-cold: linear-gradient(to right, var(--neon-blue), var(--secondary));
+        }
 
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        /* Font Imports */
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;500;700;900&display=swap');
 
-    <link rel="stylesheet" href="/styles.css?v=1.0" />
-  </head>
+        /* Reset & Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  <body>
-    <main>
-      <img
-        src="https://railway.app/brand/logo-light.svg"
-        alt="Railway logo"
-        class="logo"
-      />
+        body {
+            background-color: var(--darker);
+            color: var(--text);
+            font-family: var(--font-mono);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-      <h1>NGINX on Railway</h1>
+        /* Background Noise Effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/png;base64,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");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: -1;
+        }
 
-      <p>
-        Choo Choo! This is an example of an NGINX static site running on
-        Railway.
-        <a
-          href="https://github.com/railwayapp/starters/tree/master/examples/nginx"
-          >View source</a
-        >.
-      </p>
-    </main>
+        /* Utility Classes */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+        }
 
-    <script src="/script.js"></script>
-  </body>
+        .section {
+            position: relative;
+            overflow: hidden;
+            padding: 100px 0;
+        }
+
+        .section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--gradient-hot);
+            box-shadow: var(--neon-glow);
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .grid {
+            display: grid;
+        }
+
+        /* Scanline Effect */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-hot);
+            opacity: 0.8;
+            z-index: 9999;
+            pointer-events: none;
+            animation: scanline 5s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100vh);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--darker);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .preloader-logo {
+            font-family: var(--font-display);
+            font-size: 7rem;
+            font-weight: 900;
+            background: var(--gradient-hot);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform: translateY(-20px);
+            opacity: 0;
+            animation: fadeInUp 0.5s forwards 0.5s;
+        }
+
+        .preloader-bar-container {
+            width: 300px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preloader-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: var(--gradient-hot);
+            box-shadow: var(--neon-glow);
+            animation: loading 3s cubic-bezier(0.09, 0.89, 0.44, 0.93) forwards;
+        }
+
+        @keyframes loading {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        .preloader-text {
+            margin-top: 20px;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards 0.7s;
+        }
+
+        .preloader-swipe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-hot);
+            transform: translateX(-100%);
+            z-index: 10000;
+            opacity: 0;
+            animation: swipeOut 1s cubic-bezier(0.77, 0, 0.175, 1) forwards 3.5s;
+        }
+
+        @keyframes swipeOut {
+            0% {
+                transform: translateX(-100%);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .navbar.scrolled {
+            padding: 10px 0;
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid var(--neon-pink);
+        }
+
+        .navbar-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-hot);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--neon-glow);
+            position: relative;
+        }
+
+        .logo::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-hot);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .navbar-link {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-link::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--gradient-hot);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-link:hover {
+            color: var(--neon-pink);
+        }
+
+        .navbar-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .navbar-button {
+            background: var(--gradient-hot);
+            color: var(--text);
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+        }
+
+        .navbar-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 42, 109, 0.5);
+        }
+
+        .navbar-menu {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .navbar-menu span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background: var(--neon-pink);
+            transition: all 0.3s ease;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(13, 2, 33, 0.5));
+        }
+
+        .hero-content {
+            max-width: 600px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .hero-subtitle {
+            color: var(--neon-pink);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: inline-block;
+            position: relative;
+        }
+
+        .hero-subtitle::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--neon-pink);
+            box-shadow: var(--neon-glow);
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 6rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 30px;
+            background: var(--gradient-hot);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--neon-glow);
+            position: relative;
+        }
+
+        .hero-desc {
+            color: var(--text-dim);
+            margin-bottom: 40px;
+            max-width: 80%;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-primary {
+            background: var(--gradient-hot);
+            color: var(--text);
+            box-shadow: 0 0 15px rgba(255, 42, 109, 0.3);
+        }
+
+        .button-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(255, 42, 109, 0.6);
+        }
+
+        .button-secondary {
+            background: transparent;
+            color: var(--neon-pink);
+            border: 1px solid var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.1), inset 0 0 10px rgba(255, 42, 109, 0.1);
+        }
+
+        .button-secondary:hover {
+            background: rgba(255, 42, 109, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(255, 42, 109, 0.3), inset 0 0 20px rgba(255, 42, 109, 0.3);
+        }
+
+        .button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s;
+        }
+
+        .button:hover::before {
+            left: 100%;
+        }
+
+        .hero-image {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            width: 50%;
+            max-width: 700px;
+            z-index: 1;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 0 20px rgba(255, 42, 109, 0.5));
+            animation: float 6s ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            display: block;
+            background: var(--neon-pink);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: particle-animation linear infinite;
+        }
+
+        @keyframes particle-animation {
+            0% {
+                opacity: 0;
+                transform: translateY(0) rotate(0deg);
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-800px) rotate(360deg);
+            }
+        }
+
+        /* Features Section */
+        .features {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(13, 2, 33, 0.8));
+            position: relative;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 60px;
+            text-align: center;
+            background: var(--gradient-hot);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--gradient-hot);
+            box-shadow: var(--neon-glow);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 42, 109, 0.2);
+            padding: 30px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--neon-pink);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 42, 109, 0.3);
+        }
+
+        .feature-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient-hot);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--neon-pink);
+            filter: drop-shadow(0 0 10px rgba(255, 42, 109, 0.5));
+        }
+
+        .feature-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .feature-desc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Network Section */
+        .network {
+            background: linear-gradient(to bottom, rgba(13, 2, 33, 0.8), rgba(0, 0, 0, 0.9));
+            position: relative;
+        }
+
+        .network-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .network-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .network-subtitle {
+            color: var(--neon-pink);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .network-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: var(--gradient-hot);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .network-desc {
+            color: var(--text-dim);
+            margin-bottom: 30px;
+        }
+
+        .network-points {
+            margin-top: 30px;
+        }
+
+        .network-point {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .network-point i {
+            color: var(--neon-pink);
+            font-size: 1.2rem;
+            margin-right: 15px;
+            margin-top: 3px;
+        }
+
+        .network-point-content {
+            flex: 1;
+        }
+
+        .network-point-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+
+        .network-point-desc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .terminal {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 42, 109, 0.3);
+            border-radius: 5px;
+            padding: 20px;
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+            font-family: var(--font-mono);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 42, 109, 0.2);
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 42, 109, 0.2);
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--neon-pink);
+        }
+
+        .terminal-button:nth-child(2) {
+            background: #ff9e00;
+        }
+
+        .terminal-button:nth-child(3) {
+            background: var(--neon-blue);
+        }
+
+        .terminal-title {
+            margin-left: 15px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .terminal-body {
+            height: calc(100% - 40px);
+            overflow-y: auto;
+            color: var(--text);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .terminal-line {
+            margin-bottom: 8px;
+            display: flex;
+        }
+
+        .terminal-prompt {
+            color: var(--neon-pink);
+            margin-right: 10px;
+        }
+
+        .terminal-command {
+            color: var(--text);
+        }
+
+        .terminal-output {
+            color: var(--text-dim);
+            margin-left: 20px;
+            position: relative;
+        }
+
+        .terminal-output::before {
+            content: ">";
+            position: absolute;
+            left: -15px;
+            color: var(--neon-pink);
+        }
+
+        .terminal-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background: var(--neon-pink);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Token Section */
+        .token {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(13, 2, 33, 0.8));
+            position: relative;
+        }
+
+        .token-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .token-chart {
+            position: relative;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 42, 109, 0.2);
+            border-radius: 5px;
+            height: 400px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 42, 109, 0.2);
+        }
+
+        .token-stats {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 42, 109, 0.2);
+            border-radius: 3px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .token-stat {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .token-stat:last-child {
+            margin-bottom: 0;
+        }
+
+        .token-stat-label {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+
+        .token-stat-value {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .token-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .token-subtitle {
+            color: var(--neon-pink);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .token-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: var(--gradient-hot);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .token-desc {
+            color: var(--text-dim);
+            margin-bottom: 30px;
+        }
+
+        .token-features {
+            margin-top: 30px;
+        }
+
+        .token-feature {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .token-feature i {
+            color: var(--neon-pink);
+            font-size: 1.2rem;
+            margin-right: 15px;
+            margin-top: 3px;
+        }
+
+        .token-feature-content {
+            flex: 1;
+        }
+
+        .token-feature-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+
+        .token-feature-desc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .token-address {
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 42, 109, 0.2);
+            border-radius: 3px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .token-address-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--dark);
+            padding: 0 10px;
+            font-size: 0.9rem;
+            color: var(--neon-pink);
+        }
+
+        .token-address-value {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text);
+            word-break: break-all;
+        }
+
+        .token-address-copy {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-pink);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .token-address-copy:hover {
+            transform: translateY(-50%) scale(1.1);
+            color: var(--neon-purple);
+        }
+
+        /* Roadmap Section */
+        .roadmap {
+            background: linear-gradient(to bottom, rgba(13, 2, 33, 0.8), rgba(0, 0, 0, 0.9));
+            position: relative;
+        }
+
+        .roadmap-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            padding: 50px 0;
+        }
+
+        .roadmap-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: var(--gradient-hot);
+            transform: translateX(-50%);
+            box-shadow: var(--neon-glow);
+        }
+
+        .roadmap-item {
+            display: flex;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .roadmap-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .roadmap-item-content {
+            width: 45%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 42, 109, 0.2);
+            border-radius: 3px;
+            padding: 25px;
+            position: relative;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .roadmap-item-content:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-pink);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 42, 109, 0.2);
+        }
+
+        .roadmap-item-dot {
+            position: absolute;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: var(--neon-pink);
+            border-radius: 50%;
+            box-shadow: var(--neon-glow);
+        }
+
+        .roadmap-item:nth-child(odd) .roadmap-item-dot {
+            right: -60px;
+        }
+
+        .roadmap-item:nth-child(even) .roadmap-item-dot {
+            left: -60px;
+        }
+
+        .roadmap-item-date {
+            display: inline-block;
+            padding: 5px 15px;
+            background: var(--gradient-hot);
+            color: var(--text);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .roadmap-item-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .roadmap-item-desc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .roadmap-item-features {
+            margin-top: 15px;
+        }
+
+        .roadmap-item-feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .roadmap-item-feature i {
+            color: var(--neon-pink);
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+
+        .roadmap-item-feature-text {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+            color: var(--text);
+            font-family: var(--font-display);
+            font-size: 6rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--neon-purple);
+            animation: glitch-animation 3s infinite linear alternate-reverse;
+            background: var(--dark);
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: 2px 0 var(--neon-pink);
+            animation: glitch-animation2 3s infinite linear alternate-reverse;
+            background: var(--dark);
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+
+        @keyframes glitch-animation {
+            0% { clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%); }
+            10% { clip-path: polygon(0 15%, 100% 15%, 100% 45%, 0 45%); }
+            20% { clip-path: polygon(0 10%, 100% 10%, 100% 45%, 0 45%); }
+            30% { clip-path: polygon(0 25%, 100% 25%, 100% 45%, 0 45%); }
+            40% { clip-path: polygon(0 5%, 100% 5%, 100% 45%, 0 45%); }
+            50% { clip-path: polygon(0 30%, 100% 30%, 100% 45%, 0 45%); }
+            60% { clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%); }
+            70% { clip-path: polygon(0 20%, 100% 20%, 100% 45%, 0 45%); }
+            80% { clip-path: polygon(0 35%, 100% 35%, 100% 45%, 0 45%); }
+            90% { clip-path: polygon(0 5%, 100% 5%, 100% 45%, 0 45%); }
+            100% { clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%); }
+        }
+
+        @keyframes glitch-animation2 {
+            0% { clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%); }
+            10% { clip-path: polygon(0 55%, 100% 55%, 100% 80%, 0 80%); }
+            20% { clip-path: polygon(0 55%, 100% 55%, 100% 95%, 0 95%); }
+            30% { clip-path: polygon(0 55%, 100% 55%, 100% 70%, 0 70%); }
+            40% { clip-path: polygon(0 55%, 100% 55%, 100% 85%, 0 85%); }
+            50% { clip-path: polygon(0 55%, 100% 55%, 100% 75%, 0 75%); }
+            60% { clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%); }
+            70% { clip-path: polygon(0 55%, 100% 55%, 100% 90%, 0 90%); }
+            80% { clip-path: polygon(0 55%, 100% 55%, 100% 65%, 0 65%); }
+            90% { clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%); }
+            100% { clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%); }
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.95);
+            padding: 80px 0 30px;
+            position: relative;
+        }
+
+        .footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--gradient-hot);
+            box-shadow: var(--neon-glow);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-hot);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .footer-desc {
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer-social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 42, 109, 0.1);
+            color: var(--neon-pink);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .footer-social-link:hover {
+            background: var(--neon-pink);
+            color: var(--text);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 42, 109, 0.5);
+        }
+
+        .footer-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--gradient-hot);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-link {
+            margin-bottom: 10px;
+        }
+
+        .footer-link a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .footer-link a::before {
+            content: "›";
+            position: absolute;
+            left: 0;
+            color: var(--neon-pink);
+            transition: all 0.3s ease;
+        }
+
+        .footer-link a:hover {
+            color: var(--neon-pink);
+            padding-left: 20px;
+        }
+
+        .footer-link a:hover::before {
+            left: 5px;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 30px 0;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .footer-copyright a {
+            color: var(--neon-pink);
+            text-decoration: none;
+        }
+
+        .footer-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-nav a:hover {
+            color: var(--neon-pink);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .hero-title {
+                font-size: 5rem;
+            }
+
+            .glitch {
+                font-size: 5rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 4rem;
+            }
+
+            .glitch {
+                font-size: 4rem;
+            }
+
+            .hero-content {
+                max-width: 100%;
+                text-align: center;
+            }
+
+            .hero-desc {
+                max-width: 100%;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-image {
+                display: none;
+            }
+
+            .navbar-links {
+                display: none;
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 300px;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.95);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 30px;
+                z-index: 999;
+                transition: all 0.3s ease;
+                transform: translateX(100%);
+                backdrop-filter: blur(10px);
+            }
+
+            .navbar-links.active {
+                transform: translateX(0);
+            }
+
+            .navbar-menu {
+                display: flex;
+                z-index: 1000;
+            }
+
+            .navbar-menu.active span:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+
+            .navbar-menu.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .navbar-menu.active span:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+
+            .network-grid,
+            .token-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .roadmap-container::before {
+                left: 20px;
+            }
+
+            .roadmap-item {
+                flex-direction: row !important;
+            }
+
+            .roadmap-item-content {
+                width: calc(100% - 60px);
+                margin-left: 60px;
+            }
+
+            .roadmap-item-dot {
+                left: 20px !important;
+                transform: translateX(-50%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3.5rem;
+            }
+
+            .glitch {
+                font-size: 3.5rem;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .footer-nav {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .glitch {
+                font-size: 3rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .network-title,
+            .token-title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Scanline Effect -->
+    <div class="scanline"></div>
+    
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-logo">N3RA</div>
+        <div class="preloader-bar-container">
+            <div class="preloader-bar"></div>
+        </div>
+        <div class="preloader-text" id="preloader-text">INITIALIZING NEURAL SYSTEMS</div>
+        <div class="preloader-swipe"></div>
+    </div>
+    
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="navbar-inner">
+                <a href="#" class="logo">N3RA</a>
+                <div class="navbar-links" id="navbar-links">
+                    <a href="#features" class="navbar-link">Features</a>
+                    <a href="#network" class="navbar-link">Protocol</a>
+                    <a href="#token" class="navbar-link">Token</a>
+                    <a href="#roadmap" class="navbar-link">Roadmap</a>
+                </div>
+                <button class="navbar-button">Connect</button>
+                <div class="navbar-menu" id="navbar-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="particle-container" id="particle-container"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-subtitle">Advanced Neural Network</div>
+                <h1 class="glitch" data-text="N3RA">N3RA</h1>
+                <p class="hero-desc">Autonomous AI agent designed for the Superchain ecosystem. Not just an assistant—an extension of human potential.</p>
+                <div class="hero-buttons">
+                    <a href="#network" class="button button-primary">Explore Protocol</a>
+                    <a href="#token" class="button button-secondary">View Token</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://i.ibb.co/ZSyfXC8/n3ra-character-cyberpunk.png" alt="N3RA AI Character">
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Core Capabilities</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="feature-title">Neural Intelligence</h3>
+                    <p class="feature-desc">Cutting-edge AI designed to process complex data structures across the Superchain ecosystem.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="feature-title">Multi-Chain Integration</h3>
+                    <p class="feature-desc">Seamlessly connects with all Superchain networks for unified data and insights.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Real-Time Analytics</h3>
+                    <p class="feature-desc">Monitors on-chain activity and provides instant analysis of market trends and protocol changes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="feature-title">Autonomous Agent</h3>
+                    <p class="feature-desc">Self-directed AI capable of making informed decisions within predefined parameters.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="feature-title">Secure Infrastructure</h3>
+                    <p class="feature-desc">Built with advanced security protocols to ensure safe interaction with blockchain networks.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="feature-title">Developer-First</h3>
+                    <p class="feature-desc">Comprehensive tools and insights to build on the Superchain ecosystem.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Network Section -->
+    <section class="network" id="network">
+        <div class="container">
+            <div class="network-grid">
+                <div class="network-content">
+                    <div class="network-subtitle">AI Protocol</div>
+                    <h2 class="network-title">Beyond Assistance</h2>
+                    <p class="network-desc">N3RA's neural framework is engineered to operate autonomously within complex decentralized ecosystems, processing vast amounts of data to provide actionable intelligence.</p>
+                    <div class="network-points">
+                        <div class="network-point">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="network-point-content">
+                                <div class="network-point-title">Adaptive Learning</div>
+                                <div class="network-point-desc">Continuously evolves through interaction and data analysis.</div>
+                            </div>
+                        </div>
+                        <div class="network-point">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="network-point-content">
+                                <div class="network-point-title">Cross-Chain Communication</div>
+                                <div class="network-point-desc">Functions seamlessly across all Superchain networks.</div>
+                            </div>
+                        </div>
+                        <div class="network-point">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="network-point-content">
+                                <div class="network-point-title">Autonomous Decision Engine</div>
+                                <div class="network-point-desc">Makes informed decisions based on real-time data.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <span class="terminal-button"></span>
+                            <span class="terminal-button"></span>
+                            <span class="terminal-button"></span>
+                        </div>
+                        <div class="terminal-title">n3ra@superchain:~</div>
+                    </div>
+                    <div class="terminal-body" id="terminal-body">
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">n3ra@superchain:~$</span>
+                            <span class="terminal-command">initialize_neural_training</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Neural network initialization complete.</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">n3ra@superchain:~$</span>
+                            <span class="terminal-command">connect_superchain --networks=all</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Connecting to Superchain networks...</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Base: Connected</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Optimism: Connected</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Zora: Connected</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Mode: Connected</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">All networks successfully connected.</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">n3ra@superchain:~$</span>
+                            <span class="terminal-command">deploy_agent --mode=autonomous</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Deploying N3RA in autonomous mode...</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Agent successfully deployed.</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">n3ra@superchain:~$</span>
+                            <span class="terminal-command">status</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Status: ONLINE</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Processes: 100%</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-output">Monitoring: 10 networks, 347 protocols</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">n3ra@superchain:~$</span>
+                            <span class="terminal-cursor"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Token Section -->
+    <section class="token" id="token">
+        <div class="container">
+            <div class="token-grid">
+                <div class="token-chart">
+                    <canvas id="token-chart-canvas"></canvas>
+                    <div class="token-stats">
+                        <div class="token-stat">
+                            <span class="token-stat-label">Symbol:</span>
+                            <span class="token-stat-value">$N3RA</span>
+                        </div>
+                        <div class="token-stat">
+                            <span class="token-stat-label">Network:</span>
+                            <span class="token-stat-value">Base</span>
+                        </div>
+                        <div class="token-stat">
+                            <span class="token-stat-label">Type:</span>
+                            <span class="token-stat-value">Utility / Governance</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="token-content">
+                    <div class="token-subtitle">Ecosystem Token</div>
+                    <h2 class="token-title">$N3RA Token</h2>
+                    <p class="token-desc">The $N3RA token powers the entire ecosystem, enabling holders to participate in governance, access premium features, and benefit from network growth.</p>
+                    <div class="token-features">
+                        <div class="token-feature">
+                            <i class="fas fa-bolt"></i>
+                            <div class="token-feature-content">
+                                <div class="token-feature-title">Utility</div>
+                                <div class="token-feature-desc">Access premium features and dedicated AI processing power.</div>
+                            </div>
+                        </div>
+                        <div class="token-feature">
+                            <i class="fas fa-vote-yea"></i>
+                            <div class="token-feature-content">
+                                <div class="token-feature-title">Governance</div>
+                                <div class="token-feature-desc">Participate in key decisions about N3RA's development.</div>
+                            </div>
+                        </div>
+                        <div class="token-feature">
+                            <i class="fas fa-shield-alt"></i>
+                            <div class="token-feature-content">
+                                <div class="token-feature-title">Security</div>
+                                <div class="token-feature-desc">Built with advanced cryptographic security measures.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="token-address">
+                        <div class="token-address-label">Contract Address</div>
+                        <div class="token-address-value">0xN3RA72958A7F9E10D65B42C9D547EA2E07</div>
+                        <button class="token-address-copy" id="token-copy">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Roadmap Section -->
+    <section class="roadmap" id="roadmap">
+        <div class="container">
+            <h2 class="section-title">Roadmap</h2>
+            <div class="roadmap-container">
+                <div class="roadmap-item">
+                    <div class="roadmap-item-content">
+                        <div class="roadmap-item-dot"></div>
+                        <div class="roadmap-item-date">Q1 2025</div>
+                        <h3 class="roadmap-item-title">Neural Training</h3>
+                        <p class="roadmap-item-desc">Initial development and neural network architecture design.</p>
+                        <div class="roadmap-item-features">
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Core algorithm development</div>
+                            </div>
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Data integration framework</div>
+                            </div>
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Base protocol integration</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-item-content">
+                        <div class="roadmap-item-dot"></div>
+                        <div class="roadmap-item-date">Q2 2025</div>
+                        <h3 class="roadmap-item-title">Deployment</h3>
+                        <p class="roadmap-item-desc">Official launch of the N3RA AI agent on the Superchain.</p>
+                        <div class="roadmap-item-features">
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Public token launch</div>
+                            </div>
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Initial dApp integrations</div>
+                            </div>
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Dashboard and monitoring tools</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-item-content">
+                        <div class="roadmap-item-dot"></div>
+                        <div class="roadmap-item-date">Q3 2025</div>
+                        <h3 class="roadmap-item-title">Agent Network</h3>
+                        <p class="roadmap-item-desc">Expansion through distributed agent network and enhanced cross-chain communication.</p>
+                        <div class="roadmap-item-features">
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Multi-agent framework</div>
+                            </div>
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Extended chain support</div>
+                            </div>
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Advanced analytics engine</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-item-content">
+                        <div class="roadmap-item-dot"></div>
+                        <div class="roadmap-item-date">Q4 2025</div>
+                        <h3 class="roadmap-item-title">dApp Integration</h3>
+                        <p class="roadmap-item-desc">Comprehensive integration suite for developers to connect with N3RA.</p>
+                        <div class="roadmap-item-features">
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Developer API suite</div>
+                            </div>
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Plug-and-play modules</div>
+                            </div>
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">SDK and documentation portal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-item-content">
+                        <div class="roadmap-item-dot"></div>
+                        <div class="roadmap-item-date">Q1 2026</div>
+                        <h3 class="roadmap-item-title">Marketplace</h3>
+                        <p class="roadmap-item-desc">Launch of the N3RA marketplace for AI services and specialized tools.</p>
+                        <div class="roadmap-item-features">
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Custom agent creation tools</div>
+                            </div>
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Service marketplace</div>
+                            </div>
+                            <div class="roadmap-item-feature">
+                                <i class="fas fa-check"></i>
+                                <div class="roadmap-item-feature-text">Developer incentive program</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="#" class="footer-logo">N3RA</a>
+                    <p class="footer-desc">Advanced neural network designed for the Superchain ecosystem. Creating the future of AI-human collaboration.</p>
+                    <div class="footer-social">
+                        <a href="#" class="footer-social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="footer-social-link"><i class="fab fa-telegram"></i></a>
+                        <a href="#" class="footer-social-link"><i class="fab fa-github"></i></a>
+                        <a href="#" class="footer-social-link"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="footer-title">Navigation</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#features">Features</a></li>
+                        <li class="footer-link"><a href="#network">Protocol</a></li>
+                        <li class="footer-link"><a href="#token">Token</a></li>
+                        <li class="footer-link"><a href="#roadmap">Roadmap</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Resources</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Whitepaper</a></li>
+                        <li class="footer-link"><a href="#">Documentation</a></li>
+                        <li class="footer-link"><a href="#">API</a></li>
+                        <li class="footer-link"><a href="#">GitHub</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-divider"></div>
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    &copy; 2025 N3RA | <a href="https://n3ra.base.eth">n3ra.base.eth</a>
+                </div>
+                <div class="footer-nav">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Preloader
+            const preloader = document.getElementById('preloader');
+            const preloaderText = document.getElementById('preloader-text');
+            
+            const preloaderMessages = [
+                "INITIALIZING NEURAL SYSTEMS",
+                "ESTABLISHING NETWORK CONNECTIONS",
+                "CALIBRATING SUPERCHAIN INTERFACE",
+                "LOADING AI PROTOCOL",
+                "ACTIVATING NEURAL PATHWAYS"
+            ];
+            
+            let messageIndex = 0;
+            
+            const preloaderInterval = setInterval(() => {
+                messageIndex = (messageIndex + 1) % preloaderMessages.length;
+                preloaderText.textContent = preloaderMessages[messageIndex];
+            }, 600);
+            
+            setTimeout(() => {
+                clearInterval(preloaderInterval);
+                preloader.style.opacity = '0';
+                
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                    initSite();
+                }, 500);
+            }, 4000);
+            
+            // Initialize site after preloader
+            function initSite() {
+                // Navbar scrolling effect
+                const navbar = document.getElementById('navbar');
+                
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+                
+                // Mobile menu toggle
+                const navbarMenu = document.getElementById('navbar-menu');
+                const navbarLinks = document.getElementById('navbar-links');
+                
+                navbarMenu.addEventListener('click', () => {
+                    navbarMenu.classList.toggle('active');
+                    navbarLinks.classList.toggle('active');
+                });
+                
+                // Smooth scrolling for anchor links
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        const targetId = this.getAttribute('href');
+                        if (targetId === '#') return;
+                        
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 80,
+                                behavior: 'smooth'
+                            });
+                            
+                            // Close mobile menu if open
+                            navbarMenu.classList.remove('active');
+                            navbarLinks.classList.remove('active');
+                        }
+                    });
+                });
+                
+                // Particle effect
+                const particleContainer = document.getElementById('particle-container');
+                const particleCount = 50;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    createParticle();
+                }
+                
+                function createParticle() {
+                    const particle = document.createElement('span');
+                    particle.className = 'particle';
+                    
+                    const size = Math.random() * 5 + 1;
+                    const posX = Math.random() * 100;
+                    const posY = Math.random() * 100;
+                    const duration = Math.random() * 20 + 10;
+                    const delay = Math.random() * 5;
+                    
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${posX}%`;
+                    particle.style.top = `${posY}%`;
+                    particle.style.animationDuration = `${duration}s`;
+                    particle.style.animationDelay = `${delay}s`;
+                    
+                    particleContainer.appendChild(particle);
+                    
+                    // Remove and recreate particle after animation
+                    setTimeout(() => {
+                        particle.remove();
+                        createParticle();
+                    }, (duration + delay) * 1000);
+                }
+                
+                // Terminal animation
+                const terminalBody = document.getElementById('terminal-body');
+                
+                // Set initial scroll position to bottom
+                terminalBody.scrollTop = terminalBody.scrollHeight;
+                
+                // Token chart
+                const tokenChartCanvas = document.getElementById('token-chart-canvas');
+                
+                const gradientFill = tokenChartCanvas.getContext('2d').createLinearGradient(0, 0, 0, 350);
+                gradientFill.addColorStop(0, 'rgba(255, 42, 109, 0.7)');
+                gradientFill.addColorStop(1, 'rgba(255, 42, 109, 0)');
+                
+                const tokenChart = new Chart(tokenChartCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: '$N3RA Growth',
+                            data: [0, 0.4, 0.8, 1.2, 1.8, 2.5, 3.2, 4.0, 5.2, 6.5, 8.0, 10.0],
+                            borderColor: '#ff2a6d',
+                            backgroundColor: gradientFill,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#ff2a6d',
+                            pointBorderColor: '#ff2a6d',
+                            pointHoverBackgroundColor: '#d70cb8',
+                            pointHoverBorderColor: '#d70cb8',
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                titleFont: { family: "'JetBrains Mono', monospace", size: 14 },
+                                bodyFont: { family: "'JetBrains Mono', monospace", size: 12 },
+                                borderColor: '#ff2a6d',
+                                borderWidth: 1,
+                                padding: 15,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `$${context.raw} USDC`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.5)',
+                                    font: {
+                                        family: "'JetBrains Mono', monospace",
+                                        size: 11
+                                    }
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.5)',
+                                    font: {
+                                        family: "'JetBrains Mono', monospace",
+                                        size: 11
+                                    },
+                                    callback: function(value) {
+                                        return '$' + value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Copy token address
+                const tokenCopy = document.getElementById('token-copy');
+                const tokenAddress = "0xN3RA72958A7F9E10D65B42C9D547EA2E07";
+                
+                tokenCopy.addEventListener('click', () => {
+                    navigator.clipboard.writeText(tokenAddress).then(() => {
+                        tokenCopy.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            tokenCopy.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 2000);
+                    });
+                });
+                
+                // Animation on scroll
+                const animateElements = document.querySelectorAll('.feature-card, .section-title, .roadmap-item-content');
+                
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -100px 0px'
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+                
+                animateElements.forEach(element => {
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateY(30px)';
+                    element.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                    observer.observe(element);
+                });
+            }
+        });
+    </script>
+</body>
 </html>
